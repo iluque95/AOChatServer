@@ -14,11 +14,13 @@ ROBOT_IP= "127.0.0.1"
 ROBOT_PORT = 80
 #Connect the socket object to the robot using IP address (string) and port (int)
 client.connect((ROBOT_IP,ROBOT_PORT))
-
+msg2 = input("Introduce un msg: ")
+client.send(bytes(msg2 + '\0','ascii'))
 print('Socket Connected to ' + ROBOT_IP )
 #Read the response sent by robot upon connecting
 msg = client.recv(1024).decode('ascii')
 print(msg)
+print(msg2)
 
 # Add ASCII NULL character at the end of the cmd string
 try:

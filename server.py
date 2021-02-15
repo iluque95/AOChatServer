@@ -2,13 +2,13 @@
 # import socket programming library 
 
 from user import *
+from channel import *
 
 global htConnection
 isRunning = True
 
 users = list()
-
-
+channels = [Channel(1), Channel(2)]
 def handle_connections(s):
 
     # a forever loop until client wants to exit 
@@ -21,6 +21,8 @@ def handle_connections(s):
         
         newUser = User(c)
         
+        idChannel = channels[0].attach(newUser)
+        newUser.channels.append(idChannel)
         now = datetime.datetime.now()
                 
         data = "Hello I am the server. Time: " + now.strftime("%H:%M:%S %d/%m/%Y")
@@ -36,6 +38,7 @@ def handle_connections(s):
 
  
 def Main(): 
+
     host = "" 
   
     # reverse a port on your computer 
@@ -54,20 +57,20 @@ def Main():
     htConnection = start_new_thread(handle_connections, (s,))
 
     while True:
-        
-        for i in users:
-
+        for i in channels:
             # Check if users has pending data to process
-
+            i.notify()
             # Send updates
+            """
             while i.outputQ:
                 msg = i.outputQ.popleft()
                 i.socket.send(bytes(msg+'\0','ascii'))
                 tsPrint("Data sent:" + str(msg))
-                
+            """
                 
         time.sleep(0.5)
     
+
     isRunning = False 
     s.close() 
   

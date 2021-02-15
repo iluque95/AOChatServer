@@ -1,5 +1,5 @@
 from utilities import *
-
+from channel import *
 class User:
     
     def __init__(self, s):
@@ -10,7 +10,7 @@ class User:
         self.userIndex = 0
         self.map = 0
         self.area = 0
-        
+        self.channels = list()
         self.name = ""
         self.position = 0
         self.token = ""
@@ -34,7 +34,8 @@ class User:
                     
                     break
                 
-                self.inputQ.append(data)
+                self.channels[0].addPacket(data)
+                #self.inputQ.append(data)
 
                 #tsPrint ("Received: " + str(data))
                 
@@ -56,6 +57,10 @@ class User:
     
                 tsPrint("An exception occurred: " + str(e))
                 break
+        
+        for i in self.channels:
+           i.detach(self)
+            
   
         # connection closed 
         c.close() 
