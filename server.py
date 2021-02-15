@@ -1,73 +1,40 @@
 
 # import socket programming library 
-import socket 
-import datetime
-  
-# import thread module 
-from _thread import *
-import threading 
-  
-print_lock = threading.Lock()
 
-# CRAW; 09/02/2021 --> ThreadSafe
-def tsPrint(msg):
-    # lock acquired by client 
-    print_lock.acquire()
-    print(msg)
-    # lock released on exit 
-    print_lock.release() 
-  
-# thread function 
-def threaded(c): 
-    while True: 
-  
-        # data received from client 
-        try:
-            
-            data = c.recv(1024)
-            
-            if not data: 
-                
-                tsPrint('Bye') 
-                
-                break
-                
-            tsPrint ("Received: " + str(data))
-            
-            
-            # reverse the given string from client 
-            #data = data[::-1]
-            
-            """
-            data = ('HTTP/1.1 200 OK\r\n'
-                'Server: Python Game Chat Backend\r\n'
-                'Accept-Ranges: bytes\r\n'
-                'Content-Length: 12\r\n'
-                'Connection: close\r\n'
-                'Content-Type: text/html\r\n\r\n'
-                'Hello World!\r\n\r\n').encode('ascii')
-            """
-            
-            now = datetime.datetime.now()
-            
-            data = ("Hello I am the server. Time: " + now.strftime("%H:%M:%S %d/%m/%Y")).encode('ascii')
-  
-            # send data to client
-            c.send(data) 
-            
-            tsPrint("Data sent:" + str(data))
-            
-        except Exception as e:
+from user import *
 
-            tsPrint("An exception occurred: " + str(e))
-            break
+global htConnection
+isRunning = True
+
+users = list()
+
+
+def handle_connections(s):
+
+    # a forever loop until client wants to exit 
+    while isRunning: 
   
-    # connection closed 
-    c.close() 
-    
-    tsPrint("Connection closed")
+        # establish connection with client 
+        c, addr = s.accept() 
   
-  
+        tsPrint('Connected to :' + addr[0] + ':' + str(addr[1])) 
+        
+        newUser = User(c)
+        
+        now = datetime.datetime.now()
+                
+        data = "Hello I am the server. Time: " + now.strftime("%H:%M:%S %d/%m/%Y")
+
+        newUser.outputQ.append(data)
+        
+        users.append(newUser)
+        # Send Welcome message to client
+        #msg = "Welcome "
+        #c.send(bytes(msg+'\0','ascii'))
+        
+        
+
+ 
 def Main(): 
     host = "" 
   
@@ -81,20 +48,28 @@ def Main():
   
     # put the socket into listening mode 
     s.listen(5) 
-    print("socket is listening") 
-  
-    # a forever loop until client wants to exit 
-    while True: 
-  
-        # establish connection with client 
-        c, addr = s.accept() 
-  
-        tsPrint('Connected to :' + addr[0] + ':' + str(addr[1])) 
-  
-        # Start a new thread and return its identifier 
-        start_new_thread(threaded, (c,)) 
+    print("socket is listening")
+
+    # Start a new thread to handle new connections
+    htConnection = start_new_thread(handle_connections, (s,))
+
+    while True:
+        
+        for i in users:
+
+            # Check if users has pending data to process
+
+            # Send updates
+            while i.outputQ:
+                msg = i.outputQ.popleft()
+                i.socket.send(bytes(msg+'\0','ascii'))
+                tsPrint("Data sent:" + str(msg))
+                
+                
+        time.sleep(0.5)
+    
+    isRunning = False 
     s.close() 
-  
   
 if __name__ == '__main__': 
     Main() 
