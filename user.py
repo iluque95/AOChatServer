@@ -1,8 +1,11 @@
 from utilities import *
 from channel import *
-class User:
+from channels import *
+from observerInterface import *
+
+class User(ObserverInterface):
     
-    def __init__(self, s):
+    def __init__(self, s, c):
         self.socket = s
         #self.queue = []
         self.inputQ = deque()
@@ -16,11 +19,15 @@ class User:
         self.token = ""
         
         self.hThread = start_new_thread(self.handle_reception, (self.socket,))
-     
-        
+
+        self.disconnectionCallback = c
+
+    def __del___(self):
+
+        tsPrint("Destroying client...")
      
     # thread function 
-    def handle_reception(self,c): 
+    def handle_reception(self, c): 
         while True: 
   
             # data received from client 
@@ -28,10 +35,7 @@ class User:
             
                 data = c.recv(1024)
                 
-                if not data: 
-                
-                    tsPrint('Bye') 
-                    
+                if not data:
                     break
                 
                 self.channels[0].addPacket(data)
@@ -57,18 +61,18 @@ class User:
     
                 tsPrint("An exception occurred: " + str(e))
                 break
+
+        tsPrint("[" + c.getpeername()[0] + ":" + str(c.getpeername()[1]) + "] connection closed.")
         
+        # connection closed 
+        c.close()
+
+        # Unsubscribe
         for i in self.channels:
            i.detach(self)
-            
-  
-        # connection closed 
-        c.close() 
-        
-        tsPrint("Connection closed")
 
-        
-        
+        self.disconnectionCallback(self)
 
-        
-    
+    def update(self, channelId, msg) -> None:
+
+        self.socket.send(msg)

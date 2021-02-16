@@ -25,14 +25,15 @@ class Channel(ChannelInterface):
 
     def notify(self) -> None:
 
-
-        print("Subject: Notifying observers...")
-
         while self.queue:
             msg = self.queue.popleft()
+
+            if msg:
+
+                tsPrint("["+Channels(self.channelId).name+"] Notifying observers...")
             
-            for observer in self._observers:
-                observer.update(self, msg, idChannel)
+                for observer in self._observers:
+                    observer.update(self.channelId, msg)
 
     def addPacket(self, data) -> None:
 

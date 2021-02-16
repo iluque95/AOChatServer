@@ -3,13 +3,28 @@
 
 from user import *
 from channel import *
+from channels import *
 
 global htConnection
+online_users = 0
+MAX_USERS = 50
 isRunning = True
 
-users = list()
-channels = [Channel(1), Channel(2)]
+users = dict()
+channels = [Channel(Channels.GENERAL.value), Channel(Channels.GUILD.value)]
+
+def removeUser(user):
+    global online_users
+
+    users.pop(user)
+    online_users -= 1
+
+    del user
+
+    tsPrint("Users online: " + str(online_users))
+
 def handle_connections(s):
+    global online_users
 
     # a forever loop until client wants to exit 
     while isRunning: 
@@ -19,9 +34,9 @@ def handle_connections(s):
   
         tsPrint('Connected to :' + addr[0] + ':' + str(addr[1])) 
         
-        newUser = User(c)
+        newUser = User(c, removeUser)
         
-        idChannel = channels[0].attach(newUser)
+        idChannel = channels[Channels.GENERAL.value].attach(newUser)
         newUser.channels.append(idChannel)
         now = datetime.datetime.now()
                 
@@ -29,44 +44,43 @@ def handle_connections(s):
 
         newUser.outputQ.append(data)
         
-        users.append(newUser)
-        # Send Welcome message to client
-        #msg = "Welcome "
-        #c.send(bytes(msg+'\0','ascii'))
-        
+        users[newUser] = -1
+
+        online_users += 1
+
+        tsPrint("Users online: " + str(online_users))
         
 
- 
 def Main(): 
 
     host = "" 
   
-    # reverse a port on your computer 
-    # in our case it is 12345 but it 
-    # can be anything 
     port = 80
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
     s.bind((host, port)) 
     print("socket binded to port", port) 
   
     # put the socket into listening mode 
-    s.listen(5) 
+    s.listen(MAX_USERS) 
     print("socket is listening")
 
     # Start a new thread to handle new connections
     htConnection = start_new_thread(handle_connections, (s,))
 
     while True:
-        for i in channels:
-            # Check if users has pending data to process
-            i.notify()
-            # Send updates
-            """
+
+        for i in users:
+
+            # Check pending outgoing data to send to user i            
             while i.outputQ:
                 msg = i.outputQ.popleft()
-                i.socket.send(bytes(msg+'\0','ascii'))
-                tsPrint("Data sent:" + str(msg))
-            """
+                i.socket.send(msg.encode('ascii'))
+
+        for i in channels:
+
+            # Check if channels has pending data to notify
+            i.notify()
+
                 
         time.sleep(0.5)
     
