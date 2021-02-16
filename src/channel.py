@@ -1,8 +1,8 @@
 from typing import List
-from observable import *
-from user import *
 from collections import deque
-from channels import *
+from .observable import *
+from .user import *
+from .channels import *
 
 class Channel(Observable):
 

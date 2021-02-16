@@ -1,7 +1,7 @@
-from utilities import *
-from channel import *
-from channels import *
-from observer import *
+from .utilities import *
+from .channel import *
+from .channels import *
+from .observer import *
 
 class User(Observer):
     

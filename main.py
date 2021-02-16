@@ -1,9 +1,9 @@
 
 # import socket programming library 
 
-from user import *
-from channel import *
-from channels import *
+from src.user import *
+from src.channel import *
+from src.channels import *
 
 global htConnection
 online_users = 0
