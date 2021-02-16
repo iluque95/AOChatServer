@@ -1,13 +1,13 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 
-class Observer(ABC):
+class ObserverInterface(ABC):
     """
     The Observer interface declares the update method, used by subjects.
     """
 
     @abstractmethod
-    def update(self, subject: Subject) -> None:
+    def update(self, channelId, msg) -> None:
         """
         Receive update from subject.
         """

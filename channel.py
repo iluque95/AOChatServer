@@ -2,18 +2,19 @@ from typing import List
 from channelInterface import *
 from user import *
 from collections import deque
-class Channel(ChannelInterface):
+from channels import *
 
+class Channel(ChannelInterface):
 
     _observers: List = []
 
     queue = deque()
 
     def __init__(self, id):
-        self.idChannel = id
+        self.channelId = id
 
     def attach(self, observer):
-        print("Subject: Attached an observer.")
+        tsPrint(observer.name + ": Attached to channel " + Channels(self.channelId).name + ".")
         self._observers.append(observer)
 
         return self
