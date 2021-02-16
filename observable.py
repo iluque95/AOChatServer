@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 
-class ChannelInterface(ABC):
+class Observable(ABC):
     """
     The Subject interface declares a set of methods for managing subscribers.
     """

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 
-class ObserverInterface(ABC):
+class Observer(ABC):
     """
     The Observer interface declares the update method, used by subjects.
     """
