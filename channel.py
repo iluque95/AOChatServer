@@ -1,10 +1,10 @@
 from typing import List
-from channelInterface import *
+from observable import *
 from user import *
 from collections import deque
 from channels import *
 
-class Channel(ChannelInterface):
+class Channel(Observable):
 
     _observers: List = []
 

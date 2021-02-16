@@ -1,9 +1,9 @@
 from utilities import *
 from channel import *
 from channels import *
-from observerInterface import *
+from observer import *
 
-class User(ObserverInterface):
+class User(Observer):
     
     def __init__(self, s, c):
         self.socket = s
