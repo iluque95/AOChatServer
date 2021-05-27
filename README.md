@@ -22,9 +22,13 @@ De este modo ganamos performance y evitamos bottlenecks en el main game por vari
 
 ## Funciones técnicas
 
-- [ ] User wrapper.
+- [x] User wrapper.
 - [ ] Token de validación usuario (con caducidad).
-- [ ] Buffer queue.
+- [x] Buffer queue.
 - [ ] Detección del Main Server.
 - [ ] Verificación de autenticidad Main Server.
 - [ ] Agregar/actualizar/quitar usuario a/en/de un canal.
+
+
+
+**DISCONTINUED**
